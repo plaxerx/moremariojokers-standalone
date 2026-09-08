@@ -77,10 +77,10 @@ save/load.
 
 ## Credits and license
 
-GPL-3.0, inherited from upstream.
+GPL-3.0.
 
-This is a fork. Everything it is built on — the Jokers, the card art, the Luma
-sprites, the N64 deck and sleeve — is the work of the original team, and the
+Everything built, the Jokers, the card art, the Luma
+sprites, the N64 deck and sleeve is the work of the original team, and the
 credit for it belongs to them:
 
 **More Mario Jokers** — [SMG9000, Denverplays2 and MarioFan597](https://github.com/smg9000/Cryptid-MoreMarioJokers),
@@ -92,4 +92,4 @@ table in `src/jokers.lua`.
 **Cryptid** — MathIsFun_ and the Cryptid/Balatro Discords, for Wario and Waluigi
 and their art.
 
-Built with the assistance of Claude, as with all my Balatro mods.
+Built with the assistance of Claude.
