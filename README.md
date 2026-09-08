@@ -66,15 +66,6 @@ Both are on the wiki and in `main`, and neither shipped in the zip.
 | N64 Sleeve | Start with a random Mario Joker |
 | Deck **+** Sleeve | Both Jokers, **+5 Joker slots**, and **achievements are disabled** for the run |
 
-Upstream gave the deck and the sleeve `joker_slot = 5` *each*, unconditionally —
-wearing the sleeve on the deck handed you +10 slots and two free Legendaries with
-no downside. Here each half only grants its Joker, and the +5 is the combo bonus,
-paid for with the run not counting.
-
-Achievements go off through `G.GAME.seeded`, the flag vanilla's
-`unlock_achievement` and `check_for_unlock` already gate on. It survives
-save/load.
-
 ## Credits and license
 
 GPL-3.0.
