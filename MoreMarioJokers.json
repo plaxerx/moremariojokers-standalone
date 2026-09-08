@@ -1,0 +1,17 @@
+{
+	"id": "MoreMarioJokers",
+	"name": "More Mario Jokers - Standalone",
+	"display_name": "More Mario Jokers - Standalone",
+	"author": ["SMG9000", "Denverplays2", "MarioFan597", "plaxerx"],
+	"description": "Fan update of Mario-themed Legendary Jokers, Lumas, and the N64 deck that allows the mod to be played without Cryptid.",
+	"prefix": "mmj",
+	"main_file": "MoreMarioJokers.lua",
+	"icon_path": "mmj_icon.png",
+	"priority": 0,
+	"badge_colour": "708b91",
+	"badge_text_colour": "FFFFFF",
+	"version": "1.1.1f",
+	"dependencies": [
+		"Steamodded (>=1.0.0~BETA-1501a)"
+	]
+}
