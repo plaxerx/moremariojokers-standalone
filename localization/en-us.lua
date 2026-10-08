@@ -26,8 +26,8 @@ return {
             j_mmj_wario = {
                 name = "Wario",
                 text = {
-                    "Earn {C:money}$#1#{} when",
-                    "any Joker is triggered",
+                    "Earn {C:money}$#1#{} when any scoring",
+                    "Joker is triggered {C:attention}in round{}",
                 },
             },
             j_mmj_waluigi = {

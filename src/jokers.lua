@@ -121,6 +121,15 @@ SMODS.Joker({
 	},
 })
 
+-- Wario pays per Joker trigger, so it must not see the ones that fire outside a
+-- blind: Peach and Bowser on Blind select, Rosalina, Toad and Bowser Jr. at end
+-- of round, and anything a shop action sets off.
+local function in_round()
+	return G.STATE == G.STATES.SELECTING_HAND
+		or G.STATE == G.STATES.HAND_PLAYED
+		or G.STATE == G.STATES.DRAW_TO_HAND
+end
+
 SMODS.Joker({
 	name = "mmj-Wario",
 	key = "wario",
@@ -138,13 +147,16 @@ SMODS.Joker({
 		if
 			(
 				context.post_trigger
+				and in_round()
 				and not context.other_context.fixed_probability
 				and not context.other_context.mod_probability
 			) or context.forcetrigger
 		then
+			local source = context.blueprint_card or card
 			return {
 				dollars = MMJ.lb(card.ability.extra.money),
-				card = context.other_context and context.other_context.blueprint_card or context.other_card or nil,
+				card = source,
+				message_card = source,
 			}
 		end
 	end,

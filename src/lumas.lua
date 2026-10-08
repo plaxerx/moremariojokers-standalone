@@ -1,3 +1,5 @@
+local ANIM = 2
+
 SMODS.ConsumableType {
 	key = "Luma",
 	primary_colour = HEX("424e54"),
@@ -60,9 +62,21 @@ MMJ.Luma({
 		if gain > cap then
 			gain = cap
 		end
-		if gain > MMJ.big(0) then
-			ease_dollars(gain)
+		if gain <= MMJ.big(0) then
+			return
 		end
+		local used = copier or card
+		G.E_MANAGER:add_event(Event({
+			trigger = "after",
+			delay = 0.4 * ANIM,
+			func = function()
+				play_sound("timpani")
+				used:juice_up(0.3, 0.5)
+				ease_dollars(gain)
+				return true
+			end,
+		}))
+		delay(0.6 * ANIM)
 	end,
 	bulk_use = function(self, card, area, copier, number)
 		for _ = 1, number do
@@ -85,11 +99,11 @@ MMJ.Luma({
 			G.GAME.hands[v].mult = G.GAME.hands[v].mult * card.ability.extra.xmult
 		end
 		update_hand_text(
-			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 },
+			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 * ANIM },
 			{ handname = localize("k_all_hands"), chips = "...", mult = "...", level = "" }
 		)
 		update_hand_text(
-			{ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 },
+			{ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 * ANIM },
 			{ mult = "X" .. number_format(card.ability.extra.xmult), StatusText = true }
 		)
 		update_hand_text(
@@ -118,11 +132,11 @@ MMJ.Luma({
 			G.GAME.hands[v].chips = G.GAME.hands[v].chips * card.ability.extra.xchips
 		end
 		update_hand_text(
-			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 },
+			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 * ANIM },
 			{ handname = localize("k_all_hands"), chips = "...", mult = "...", level = "" }
 		)
 		update_hand_text(
-			{ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 },
+			{ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 * ANIM },
 			{ chips = "X" .. number_format(card.ability.extra.xchips), StatusText = true }
 		)
 		update_hand_text(
@@ -148,11 +162,11 @@ MMJ.Luma({
 	end,
 	use = function(self, card, area, copier)
 		update_hand_text(
-			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 },
+			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 * ANIM },
 			{ handname = localize("k_all_hands"), chips = "...", mult = "...", level = "" }
 		)
 		update_hand_text(
-			{ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 },
+			{ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 * ANIM },
 			{ mult = "Swap", chips = "Swap", StatusText = true }
 		)
 		for _, v in ipairs(G.handlist) do
@@ -190,13 +204,13 @@ MMJ.Luma({
 			return
 		end
 		update_hand_text(
-			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 },
+			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 * ANIM },
 			{ handname = localize("k_all_hands"), chips = "...", mult = "...", level = "" }
 		)
 		update_hand_text({ delay = 0 }, { mult = "+", StatusText = true })
 		update_hand_text({ delay = 0 }, { chips = "+", StatusText = true })
 		update_hand_text({ sound = "button", volume = 0.7, pitch = 0.9, delay = 0 }, { level = "+" .. tostring(levels) })
-		delay(1.3)
+		delay(1.3 * ANIM)
 		for k, _ in pairs(G.GAME.hands) do
 			level_up_hand(card, k, true, levels)
 		end
@@ -259,6 +273,22 @@ local PINK_BOONS = {
 	},
 }
 
+-- Draws without replacement, so all five land once every five uses instead of
+-- five independent rolls clumping over the handful you see in a run.
+local function draw_pink_boon()
+	G.GAME.mmj_pink_bag = G.GAME.mmj_pink_bag or {}
+	local bag = G.GAME.mmj_pink_bag
+	if #bag == 0 then
+		for i = 1, #PINK_BOONS do
+			bag[i] = i
+		end
+	end
+	local slot = pseudorandom("pink_luma", 1, #bag)
+	local index = bag[slot]
+	table.remove(bag, slot)
+	return index
+end
+
 MMJ.Luma({
 	key = "mmj_pink_luma",
 	pos = { x = 5, y = 0 },
@@ -269,12 +299,23 @@ MMJ.Luma({
 		return { vars = {} }
 	end,
 	use = function(self, card, area, copier)
-		local boon = pseudorandom_element(PINK_BOONS, pseudoseed("pink_luma"))
-		boon.apply()
-		card_eval_status_text(card, "extra", nil, nil, nil, {
-			message = boon.message,
-			colour = boon.colour,
-		})
+		local boon = PINK_BOONS[draw_pink_boon()]
+		local used = copier or card
+		G.E_MANAGER:add_event(Event({
+			trigger = "after",
+			delay = 0.4 * ANIM,
+			func = function()
+				play_sound("timpani")
+				used:juice_up(0.3, 0.5)
+				boon.apply()
+				card_eval_status_text(used, "extra", nil, nil, nil, {
+					message = boon.message,
+					colour = boon.colour,
+				})
+				return true
+			end,
+		}))
+		delay(0.6 * ANIM)
 	end,
 	bulk_use = function(self, card, area, copier, number)
 		for _ = 1, number do
@@ -292,9 +333,10 @@ local function perma_bonus(card, key, message, colour)
 	local total = target.ability[key]
 	G.E_MANAGER:add_event(Event({
 		trigger = "after",
-		delay = 0.2,
+		delay = 0.2 * ANIM,
 		func = function()
 			play_sound("tarot1")
+			play_sound("card1", 1.2, 0.4)
 			target:juice_up(0.3, 0.5)
 			card_eval_status_text(target, "extra", nil, nil, nil, {
 				message = "X" .. number_format(1 + total) .. " " .. message,
@@ -305,12 +347,13 @@ local function perma_bonus(card, key, message, colour)
 	}))
 	G.E_MANAGER:add_event(Event({
 		trigger = "after",
-		delay = 0.3,
+		delay = 0.5 * ANIM,
 		func = function()
 			G.hand:unhighlight_all()
 			return true
 		end,
 	}))
+	delay(0.6 * ANIM)
 end
 
 local function one_card_selected(self, card)
@@ -372,10 +415,10 @@ MMJ.Luma({
 			G.GAME.hands[v].chips = G.GAME.hands[v].chips * card.ability.extra.xchips
 		end
 		update_hand_text(
-			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 },
+			{ sound = "button", volume = 0.7, pitch = 0.8, delay = 0.3 * ANIM },
 			{ handname = localize("k_all_hands"), chips = "...", mult = "...", level = "" }
 		)
-		update_hand_text({ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 }, {
+		update_hand_text({ sound = "tarot1", volume = 0.7, pitch = 1, delay = 1 * ANIM }, {
 			mult = "X" .. number_format(card.ability.extra.xmult),
 			chips = "X" .. number_format(card.ability.extra.xchips),
 			StatusText = true,
@@ -406,9 +449,24 @@ MMJ.Luma({
 		return G.GAME and G.GAME.round_resets.ante - card.ability.extra.ante >= 1
 	end,
 	use = function(self, card, area, copier)
-		ease_ante(-card.ability.extra.ante)
-		G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante or G.GAME.round_resets.ante
-		G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante - card.ability.extra.ante
+		local used = copier or card
+		local ante = card.ability.extra.ante
+		G.E_MANAGER:add_event(Event({
+			trigger = "after",
+			delay = 0.4 * ANIM,
+			func = function()
+				if G.GAME.round_resets.ante - ante < 1 then
+					return true
+				end
+				play_sound("timpani")
+				used:juice_up(0.3, 0.5)
+				ease_ante(-ante)
+				G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante or G.GAME.round_resets.ante
+				G.GAME.round_resets.blind_ante = G.GAME.round_resets.blind_ante - ante
+				return true
+			end,
+		}))
+		delay(0.8 * ANIM)
 	end,
 	bulk_use = function(self, card, area, copier, number)
 		for _ = 1, number do

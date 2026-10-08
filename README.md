@@ -23,7 +23,7 @@ Running with **Cryptid itself is fine.** but use the original version is preferr
 | --- | --- |
 | Mario | Retriggers all Jokers 2 additional times |
 | Luigi | All Jokers give X2.5 Chips |
-| Wario | Earn $3 whenever any Joker is triggered |
+| Wario | Earn $3 whenever any Joker is triggered in round |
 | Waluigi | All Jokers give X2.5 Mult |
 | Peach | Each Joker shrinks the Blind's required score by 5% on Blind select |
 | Daisy | Retriggers every scored 4 and 3 once per Joker you own |
